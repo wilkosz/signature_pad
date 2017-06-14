@@ -1,4 +1,4 @@
 node_modules
-dist
+#dist #need dist to publish
 yarn-error.log
 npm-debug.log
