@@ -240,15 +240,6 @@ SignaturePad.prototype._addPoint = function (point) {
   return {};
 };
 
-SignaturePad.prototype._addLine = function (startPoint, endPoint) {
-  const line = {
-    startPoint,
-    endPoint,
-  };
-  const width = this._calculateCurveWidths(line);
-  return { line, width };
-};
-
 SignaturePad.prototype._calculateCurveControlPoints = function (s1, s2, s3) {
   const dx1 = s1.x - s2.x;
   const dy1 = s1.y - s2.y;
@@ -351,20 +342,11 @@ SignaturePad.prototype._drawDot = function (point) {
   ctx.fill();
 };
 
-SignaturePad.prototype._fromData = function (pointGroups, drawCurve, drawLine, drawDot) {
+SignaturePad.prototype._fromData = function (pointGroups, drawCurve, drawDot) {
   for (let i = 0; i < pointGroups.length; i += 1) {
     const group = pointGroups[i];
 
-    if (group.length === 2) {
-      const rawStart = group[0];
-      const rawEnd = group[1];
-      const startPoint = new Point(rawStart.x, rawStart.y, rawStart.time);
-      const endPoint = new Point(rawEnd.x, rawEnd.y, rawEnd.time);
-      const color = rawStart.color;
-      const { line, width } = this._addLine(startPoint, endPoint);
-
-      drawLine(line, width, color);
-    } else if (group.length > 1) {
+    if (group.length > 2) {
       for (let j = 0; j < group.length; j += 1) {
         const rawPoint = group[j];
         const point = new Point(rawPoint.x, rawPoint.y, rawPoint.time);
@@ -430,17 +412,6 @@ SignaturePad.prototype._toSVG = function () {
 
         svg.appendChild(path);
       }
-    },
-    (points, width, color) => {
-      const line = document.createElement('line');
-      line.setAttribute('x1', points.startPoint.x.toFixed(3));
-      line.setAttribute('y1', points.startPoint.y.toFixed(3));
-      line.setAttribute('x2', points.endPoint.x.toFixed(3));
-      line.setAttribute('y2', points.endPoint.y.toFixed(3));
-      line.setAttribute('stroke-width', (width * 2.25).toFixed(3));
-      line.setAttribute('stroke', color);
-
-      svg.appendChild(line);
     },
     (rawPoint) => {
       const circle = document.createElement('circle');

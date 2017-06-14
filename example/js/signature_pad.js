@@ -458,7 +458,7 @@ SignaturePad.prototype._fromData = function (pointGroups, drawCurve, drawDot) {
   for (var i = 0; i < pointGroups.length; i += 1) {
     var group = pointGroups[i];
 
-    if (group.length > 1) {
+    if (group.length > 2) {
       for (var j = 0; j < group.length; j += 1) {
         var rawPoint = group[j];
         var point = new Point(rawPoint.x, rawPoint.y, rawPoint.time);
