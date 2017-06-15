@@ -398,6 +398,20 @@ SignaturePad.prototype._calculateCurveWidths = function (curve) {
   return widths;
 };
 
+SignaturePad.prototype._calculateIfPointsInsideDot = function (rawPoints) {
+  var centre = rawPoints[0];
+  var radius = typeof this.dotSize === 'function' ? this.dotSize() : this.dotSize;
+
+  for (var i = 1; i < rawPoints.length; i += 1) {
+    var xLen = rawPoints[i].x - centre.x;
+    var yLen = rawPoints[i].y - centre.y;
+    if (Math.sqrt(xLen * xLen + yLen * yLen) > radius) {
+      return false;
+    }
+  }
+  return true;
+};
+
 SignaturePad.prototype._strokeWidth = function (velocity) {
   return Math.max(this.maxWidth / (velocity + 1), this.minWidth);
 };
@@ -457,8 +471,13 @@ SignaturePad.prototype._drawDot = function (point) {
 SignaturePad.prototype._fromData = function (pointGroups, drawCurve, drawDot) {
   for (var i = 0; i < pointGroups.length; i += 1) {
     var group = pointGroups[i];
+    var isDot = false;
 
-    if (group.length > 2) {
+    if (group.length < 5) {
+      isDot = this._calculateIfPointsInsideDot(group);
+    }
+
+    if (group.length > 1 && !isDot) {
       for (var j = 0; j < group.length; j += 1) {
         var rawPoint = group[j];
         var point = new Point(rawPoint.x, rawPoint.y, rawPoint.time);
