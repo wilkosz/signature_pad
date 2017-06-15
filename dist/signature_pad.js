@@ -471,11 +471,7 @@ SignaturePad.prototype._drawDot = function (point) {
 SignaturePad.prototype._fromData = function (pointGroups, drawCurve, drawDot) {
   for (var i = 0; i < pointGroups.length; i += 1) {
     var group = pointGroups[i];
-    var isDot = false;
-
-    if (group.length < 5) {
-      isDot = this._calculateIfPointsInsideDot(group);
-    }
+    var isDot = this._calculateIfPointsInsideDot(group);
 
     if (group.length > 1 && !isDot) {
       for (var j = 0; j < group.length; j += 1) {
