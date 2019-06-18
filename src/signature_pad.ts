@@ -394,6 +394,21 @@ export default class SignaturePad {
     return widths;
   }
 
+  private _calculateIfPointsInsideDot(points: IBasicPoint[]): boolean {
+    const centre = points[0];
+    const radius =
+      typeof this.dotSize === 'function' ? this.dotSize() : this.dotSize;
+
+    for (let i = 1; i < points.length; i += 1) {
+      let xLen = points[i].x - centre.x;
+      let yLen = points[i].y - centre.y;
+      if (Math.sqrt(xLen * xLen + yLen * yLen) > radius) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   private _strokeWidth(velocity: number): number {
     return Math.max(this.maxWidth / (velocity + 1), this.minWidth);
   }
@@ -468,8 +483,9 @@ export default class SignaturePad {
   ): void {
     for (const group of pointGroups) {
       const { color, points } = group;
+      const isDot = this._calculateIfPointsInsideDot(points);
 
-      if (points.length > 1) {
+      if (points.length > 1 && !isDot) {
         for (let j = 0; j < points.length; j += 1) {
           const basicPoint = points[j];
           const point = new Point(basicPoint.x, basicPoint.y, basicPoint.time);
